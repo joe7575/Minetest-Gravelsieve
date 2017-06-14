@@ -1,7 +1,13 @@
 # Gravel Sieve Mod
+A Mod for those who do not want to spend half their lives underground...
+
+Inspired from a Minecr**t Video on YT.
+
+This mod simplifies the extraction of ores by the fact that ores can be obtained simply by sieving gravel.
+
 This mod includes two new tools:
  - a hammer to produce gravel from Cobblestone
- - a sieve to sift gravel to find ores
+ - a gravel sieve to find ores
 
 Browse on: ![GitHub](https://github.com/joe7575/Minetest-Gravelsieve)
 
