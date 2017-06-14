@@ -4,11 +4,11 @@
 	================
 
 	v0.01 by JoSt
-    Derived from the work of RealBadAngel, Maciej Kasatkin (screwdriver)
+	Derived from the work of RealBadAngel, Maciej Kasatkin (screwdriver)
 
 	Copyright (C) 2017 Joachim Stolberg
-    Copyright (C) 2013-2016 RealBadAngel, Maciej Kasatkin
-    Copyright (C) 2013-2016 Various Minetest developers and contributors
+	Copyright (C) 2013-2016 RealBadAngel, Maciej Kasatkin
+	Copyright (C) 2013-2016 Various Minetest developers and contributors
 
 	LGPLv2.1+
 	See LICENSE.txt for more information
@@ -35,12 +35,12 @@ gravelsieve.handler = function(itemstack, user, pointed_thing)
 	local node = minetest.get_node(pos)
 	if node.name == "default:cobble" then
 		node.name = "default:gravel"
-        minetest.swap_node(pos, node)
-        minetest.sound_play({
-            name="default_dig_crumbly"},{
-            gain=1,
-            max_hear_distance=20,
-            loop=false})
+		minetest.swap_node(pos, node)
+		minetest.sound_play({
+			name="default_dig_crumbly"},{
+			gain=1,
+			max_hear_distance=20,
+			loop=false})
 	end
 
 	return itemstack
