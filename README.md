@@ -1,7 +1,7 @@
 # Gravel Sieve Mod
-This mod include two new tools:
- - a hammer to produce gravel from cobble
- - a sieve to sift gravel in order to find ores.
+This mod includes two new tools:
+ - a hammer to produce gravel from Cobblestone
+ - a sieve to sift gravel to find ores
 
 Browse on: ![GitHub](https://github.com/joe7575/Minetest-Gravelsieve)
 

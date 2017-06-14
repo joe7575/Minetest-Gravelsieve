@@ -14,7 +14,7 @@
 	See LICENSE.txt for more information
 
 	History:
-	2017-06-04  v0.01  first version
+	2017-06-14  v0.01  first version
 
 ]]--
 
@@ -25,6 +25,7 @@ gravelsieve = {
 dofile(minetest.get_modpath("gravelsieve") .. "/hammer.lua")
 
 
+-- Ore probability table  (1/n)
 local sieve_table = {
     iron_lump = 15,
     copper_lump = 15,
@@ -46,7 +47,6 @@ local function can_dig(pos, player)
 	local meta = minetest.get_meta(pos);
 	local inv = meta:get_inventory()
 	return inv:is_empty("dst") and inv:is_empty("src")
-    --return true
 end
 
 local function allow_metadata_inventory_put(pos, listname, index, stack, player)
@@ -79,7 +79,7 @@ end
 local function swap_node(pos, meta)
 	local node = minetest.get_node(pos)
 
-    idx = meta:get_int("idx")
+    local idx = meta:get_int("idx")
     idx = (idx + 1) % 4
     meta:set_int("idx", idx)
     node.name = "gravelsieve:sieve"..idx
@@ -217,7 +217,7 @@ end
 minetest.register_node("gravelsieve:gravel1", {
 	description = "Gravel sifted 1",
 	tiles = {"default_gravel.png"},
-	groups = {crumbly = 2, falling_node = 1},
+	groups = {crumbly = 2, falling_node = 1, not_in_creative_inventory=1},
 	sounds = default.node_sound_gravel_defaults(),
 	drop = {
 		max_items = 1,
@@ -231,7 +231,7 @@ minetest.register_node("gravelsieve:gravel1", {
 minetest.register_node("gravelsieve:gravel2", {
 	description = "Gravel sifted 2",
 	tiles = {"default_gravel.png"},
-	groups = {crumbly = 2, falling_node = 1},
+	groups = {crumbly = 2, falling_node = 1, not_in_creative_inventory=1},
 	sounds = default.node_sound_gravel_defaults(),
 	drop = {
 		max_items = 1,
@@ -245,7 +245,7 @@ minetest.register_node("gravelsieve:gravel2", {
 minetest.register_node("gravelsieve:gravel3", {
 	description = "Gravel sifted 3",
 	tiles = {"default_gravel.png"},
-	groups = {crumbly = 2, falling_node = 1},
+	groups = {crumbly = 2, falling_node = 1, not_in_creative_inventory=1},
 	sounds = default.node_sound_gravel_defaults(),
 	drop = {
 		max_items = 1,

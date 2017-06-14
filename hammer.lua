@@ -13,9 +13,6 @@
 	LGPLv2.1+
 	See LICENSE.txt for more information
 
-	History:
-	2017-06-04  v0.01  first version
-
 ]]--
 
 
@@ -23,7 +20,6 @@ gravelsieve.disallow = function(pos, node, user, mode, new_param2)
 	return false
 end
 
--- Handles rotation
 gravelsieve.handler = function(itemstack, user, pointed_thing)
 	if pointed_thing.type ~= "node" then
 		return
@@ -50,20 +46,14 @@ gravelsieve.handler = function(itemstack, user, pointed_thing)
 	return itemstack
 end
 
--- hammer
 minetest.register_tool("gravelsieve:hammer", {
 	description = "Hammer converts any kind of stone to gravel",
 	inventory_image = "gravelsieve_hammer.png",
 	on_use = function(itemstack, user, pointed_thing)
-		hammer.handler(itemstack, user, pointed_thing)
+		gravelsieve.handler(itemstack, user, pointed_thing)
 		return itemstack
 	end,
--- 	on_place = function(itemstack, user, pointed_thing)
--- 		hammer.handler(itemstack, user, pointed_thing)
--- 		return itemstack
--- 	end,
 })
-
 
 minetest.register_craft({
 	output = "gravelsieve:hammer",
