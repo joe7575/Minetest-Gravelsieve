@@ -15,6 +15,7 @@
 
 	History:
 	2017-06-14  v0.01  first version
+	2017-06-15  v0.02  manually use of the sieve added
 
 ]]--
 
@@ -22,11 +23,12 @@ gravelsieve = {
 	rand = PseudoRandom(1234)
 }
 
-dofile(minetest.get_modpath("gravelsieve") .. "/hammer.lua")
 
+dofile(minetest.get_modpath("gravelsieve") .. "/hammer.lua")
+dofile(minetest.get_modpath("gravelsieve") .. "/config.lua")
 
 -- Ore probability table  (1/n)
-local sieve_table = {
+local ore_probability = {
 	iron_lump = 15,
 	copper_lump = 15,
 	tin_lump = 15,
@@ -35,6 +37,14 @@ local sieve_table = {
 	diamond = 50,
 }
 
+-- gravel probability factor
+local probability_factor = {
+    ["default:gravel"] = 1,
+    ["gravelsieve:gravel1"] = 2,
+    ["gravelsieve:gravel2"] = 4,
+    ["gravelsieve:gravel3"] = 8,
+    
+}
 
 local sieve_formspec =
 	"size[8,8]"..
@@ -43,11 +53,6 @@ local sieve_formspec =
 	"list[context;dst;4,0;4,3;]"..
 	"list[current_player;main;0,4;8,4;]"
 
-local function can_dig(pos, player)
-	local meta = minetest.get_meta(pos);
-	local inv = meta:get_inventory()
-	return inv:is_empty("dst") and inv:is_empty("src")
-end
 
 local function allow_metadata_inventory_put(pos, listname, index, stack, player)
 	if minetest.is_protected(pos, player:get_player_name()) then
@@ -76,43 +81,46 @@ local function allow_metadata_inventory_take(pos, listname, index, stack, player
 	return stack:get_count()
 end
 
-local function swap_node(pos, meta)
+-- handle the sieve animation
+local function swap_node(pos, meta, start)
 	local node = minetest.get_node(pos)
-
-	local idx = meta:get_int("idx")
-	idx = (idx + 1) % 4
+    local idx = meta:get_int("idx")
+    if start then
+        if idx == 3 then
+            idx = 0
+        end
+    else
+        idx = (idx + 1) % 4
+    end
 	meta:set_int("idx", idx)
 	node.name = "gravelsieve:sieve"..idx
 	minetest.swap_node(pos, node)
 	return idx == 3
 end
 
+-- place ores to dst according to the calculated probability
 local function random_ore(inv, src)
 	local num
-	local result = false
-	for ore, probability in pairs(sieve_table) do
-		if src:get_name() == "gravelsieve:gravel1" then
-			probability = probability * 2
-		elseif src:get_name() == "gravelsieve:gravel2" then
-			probability = probability * 4
-		elseif src:get_name() == "gravelsieve:gravel3" then
-			probability = probability * 8
-		end
-		num = gravelsieve.rand:next(0, probability)
-		if num == probability then
-			item = ItemStack("default:"..ore)
-			if inv:room_for_item("dst", item) then
-				inv:add_item("dst", item)
-				return true
-			end
+	for ore, probability in pairs(ore_probability) do
+        probability = probability * probability_factor[src:get_name()]
+        if probability ~= nil then
+            num = gravelsieve.rand:next(0, probability)
+            if num == probability then
+                item = ItemStack("default:"..ore)
+                if inv:room_for_item("dst", item) then
+                    inv:add_item("dst", item)
+                    return true     -- ore placed
+                end
+            end
 		end
 	end
-	return result
+	return false    -- gravel has to be moved
 end
-		
+
+-- move gravel and ores to dst
 local function move_src2dst(meta, pos, inv, src, dst)
 	if inv:room_for_item("dst", dst) and inv:contains_item("src", src) then
-		local res = swap_node(pos, meta)
+		local res = swap_node(pos, meta, false)
 		if res then
 			if not random_ore(inv, src) then
 				inv:add_item("dst", dst)
@@ -124,7 +132,7 @@ local function move_src2dst(meta, pos, inv, src, dst)
 	return false
 end
 
-
+-- timer callback, alternatively called by on_punch
 local function sieve_node_timer(pos, elapsed)
 
 	local meta = minetest.get_meta(pos)
@@ -140,9 +148,13 @@ local function sieve_node_timer(pos, elapsed)
 		return true
 	elseif move_src2dst(meta, pos, inv, gravel2, gravel3) then
 		return true
+	elseif move_src2dst(meta, pos, inv, gravel3, gravel3) then
+		return true
 	else
-		minetest.get_node_timer(pos):stop()
+		if not gravelsieve.manually then
+            minetest.get_node_timer(pos):stop()
 		return false
+        end
 	end
 end
 
@@ -195,16 +207,55 @@ for idx = 0,4 do
 		end,
 
 		on_metadata_inventory_move = function(pos)
-			minetest.get_node_timer(pos):start(1.0)
+            if gravelsieve.manually then
+                local meta = minetest.get_meta(pos)
+                swap_node(pos, meta, true)
+            else
+                minetest.get_node_timer(pos):start(1.0)
+            end
 		end,
 
 		on_metadata_inventory_take = function(pos)
-			minetest.get_node_timer(pos):start(1.0)
+            if gravelsieve.manually then
+                local meta = minetest.get_meta(pos)
+                local inv = meta:get_inventory()
+                if inv:is_empty("src") then
+                    -- sieve should be empty
+                    meta:set_int("idx", 2)
+                    swap_node(pos, meta, false)
+                end
+            else
+                minetest.get_node_timer(pos):start(1.0)
+            end
 		end,
 
 		on_metadata_inventory_put = function(pos)
-			 minetest.get_node_timer(pos):start(1.0)
+            if gravelsieve.manually then
+                local meta = minetest.get_meta(pos)
+                swap_node(pos, meta, true)
+            else
+                minetest.get_node_timer(pos):start(1.0)
+            end
 		end,
+
+        on_punch = function(pos, node, puncher, pointed_thing)
+            local meta = minetest.get_meta(pos)
+            local inv = meta:get_inventory()
+            if inv:is_empty("dst") and inv:is_empty("src") then
+                minetest.node_punch(pos, node, puncher, pointed_thing)
+            else
+                -- punching the sieve speeds up the process 
+                sieve_node_timer(pos, 0)
+            end
+        end,
+
+        on_dig = function(pos, node, puncher, pointed_thing)
+            local meta = minetest.get_meta(pos)
+            local inv = meta:get_inventory()
+            if inv:is_empty("dst") and inv:is_empty("src") then
+                minetest.node_dig(pos, node, puncher, pointed_thing)
+            end
+        end,
 
 		allow_metadata_inventory_put = allow_metadata_inventory_put,
 		allow_metadata_inventory_move = allow_metadata_inventory_move,
