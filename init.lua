@@ -31,7 +31,7 @@ dofile(minetest.get_modpath("gravelsieve") .. "/config.lua")
 local ore_probability = {
 	iron_lump = 15,
 	copper_lump = 15,
-	tin_lump = 15,
+	--tin_lump = 15, not available in V0.4.15
 	gold_lump = 25,
 	mese_crystal = 25,
 	diamond = 50,
