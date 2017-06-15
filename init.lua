@@ -23,9 +23,9 @@ gravelsieve = {
 	rand = PseudoRandom(1234)
 }
 
-
 dofile(minetest.get_modpath("gravelsieve") .. "/hammer.lua")
-dofile(minetest.get_modpath("gravelsieve") .. "/config.lua")
+
+gravelsieve.manually = minetest.settings:get("gravelsieve_manually") or false
 
 -- Ore probability table  (1/n)
 local ore_probability = {
@@ -193,6 +193,10 @@ for idx = 0,4 do
 			type = "fixed",
 			fixed = nodebox_data,
 		},
+        selection_box = {
+            type = "fixed",
+            fixed = { -8/16, -8/16, -8/16,   8/16, 4/16, 8/16 },
+        },
 
 		can_dig = can_dig,
 		on_timer = sieve_node_timer,
@@ -321,3 +325,22 @@ minetest.register_craft({
 
 minetest.register_alias("gravelsieve:sieve", "gravelsieve:sieve3")
 
+--~ -- particle effects
+--~ function tp_effect(pos)
+	--~ minetest.add_particlespawner({
+		--~ amount = 20,
+		--~ time = 0.25,
+		--~ minpos = pos,
+		--~ maxpos = pos,
+		--~ minvel = {x = -2, y = 1, z = -2},
+		--~ maxvel = {x = 2,  y = 2,  z = 2},
+		--~ minacc = {x = 0, y = -2, z = 0},
+		--~ maxacc = {x = 0, y = -4, z = 0},
+		--~ minexptime = 0.1,
+		--~ maxexptime = 1,
+		--~ minsize = 0.5,
+		--~ maxsize = 1.5,
+		--~ texture = "particle.png",
+		--~ glow = 15,
+	--~ })
+--~ end
