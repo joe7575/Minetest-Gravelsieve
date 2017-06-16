@@ -3,7 +3,7 @@
 	Gravel Sieve Mod
 	================
 
-	v0.01 by JoSt
+	v0.03 by JoSt
 	Derived from the work of celeron55, Perttu Ahola  (furnace)
 
 	Copyright (C) 2017 Joachim Stolberg
@@ -14,8 +14,12 @@
 	See LICENSE.txt for more information
 
 	History:
-	2017-06-14  v0.01  first version
-	2017-06-15  v0.02  manually use of the sieve added
+	2017-06-14  v0.01  First version
+	2017-06-15  v0.02  Manually use of the sieve added
+    2017-06-17  v0.03  * Settings bug fixed
+                       * Drop bug fixed
+                       * Compressed Gravel block added (Inspired by Modern Hippie)
+                       * Recipes for Compressed Gravel added 
 
 ]]--
 
@@ -25,7 +29,7 @@ gravelsieve = {
 
 dofile(minetest.get_modpath("gravelsieve") .. "/hammer.lua")
 
-gravelsieve.manually = minetest.settings:get("gravelsieve_manually") or false
+gravelsieve.manually = minetest.settings:get("gravelsieve_enable_manual_mode") == "true"
 
 -- Ore probability table  (1/n)
 local ore_probability = {
@@ -134,7 +138,6 @@ end
 
 -- timer callback, alternatively called by on_punch
 local function sieve_node_timer(pos, elapsed)
-
 	local meta = minetest.get_meta(pos)
 	local inv = meta:get_inventory()
 	local gravel = ItemStack("default:gravel")
@@ -198,7 +201,6 @@ for idx = 0,4 do
             fixed = { -8/16, -8/16, -8/16,   8/16, 4/16, 8/16 },
         },
 
-		can_dig = can_dig,
 		on_timer = sieve_node_timer,
 
 		on_construct = function(pos)
@@ -268,50 +270,36 @@ for idx = 0,4 do
 		paramtype2 = "facedir",
 		sunlight_propagates = true,
 		is_ground_content = false,
-		groups = {cracky=3, stone=1, uber=1, not_in_creative_inventory=not_in_creative_inventory},
+		groups = {choppy=2, cracky=1, not_in_creative_inventory=not_in_creative_inventory},
 	})
 end
 
 minetest.register_node("gravelsieve:gravel1", {
 	description = "Gravel sifted 1",
 	tiles = {"default_gravel.png"},
-	groups = {crumbly = 2, falling_node = 1, not_in_creative_inventory=1},
+	groups = {crumbly = 2, falling_node = 1, not_in_creative_inventory=1, gravel = 1},
 	sounds = default.node_sound_gravel_defaults(),
-	drop = {
-		max_items = 1,
-		items = {
-			{items = {'default:flint'}, rarity = 16},
-			{items = {'default:gravel'}}
-		}
-	}
 })
 
 minetest.register_node("gravelsieve:gravel2", {
 	description = "Gravel sifted 2",
 	tiles = {"default_gravel.png"},
-	groups = {crumbly = 2, falling_node = 1, not_in_creative_inventory=1},
+	groups = {crumbly = 2, falling_node = 1, not_in_creative_inventory=1, gravel = 1},
 	sounds = default.node_sound_gravel_defaults(),
-	drop = {
-		max_items = 1,
-		items = {
-			{items = {'default:flint'}, rarity = 16},
-			{items = {'default:gravel'}}
-		}
-	}
 })
 
 minetest.register_node("gravelsieve:gravel3", {
 	description = "Gravel sifted 3",
 	tiles = {"default_gravel.png"},
-	groups = {crumbly = 2, falling_node = 1, not_in_creative_inventory=1},
+	groups = {crumbly = 2, falling_node = 1, not_in_creative_inventory=1, gravel = 1},
 	sounds = default.node_sound_gravel_defaults(),
-	drop = {
-		max_items = 1,
-		items = {
-			{items = {'default:flint'}, rarity = 16},
-			{items = {'default:gravel'}}
-		}
-	}
+})
+
+minetest.register_node("gravelsieve:compressed_gravel", {
+	description = "Compressed Gravel",
+    tiles = {"gravelsieve_compressed_gravel.png"},
+	groups = {crumbly = 2, cracky = 2},
+	sounds = default.node_sound_gravel_defaults(),
 })
 
 minetest.register_craft({
@@ -323,24 +311,21 @@ minetest.register_craft({
 	},
 })
 
+minetest.register_craft({
+	output = "gravelsieve:compressed_gravel",
+	recipe = {
+		{"group:gravel", "group:gravel"},
+		{"group:gravel", "group:gravel"},
+	},
+})
+
+minetest.register_craft({
+	type = "cooking",
+	output = "default:cobble",
+	recipe = "gravelsieve:compressed_gravel",
+	cooktime = 10,
+})
+
+
 minetest.register_alias("gravelsieve:sieve", "gravelsieve:sieve3")
 
---~ -- particle effects
---~ function tp_effect(pos)
-	--~ minetest.add_particlespawner({
-		--~ amount = 20,
-		--~ time = 0.25,
-		--~ minpos = pos,
-		--~ maxpos = pos,
-		--~ minvel = {x = -2, y = 1, z = -2},
-		--~ maxvel = {x = 2,  y = 2,  z = 2},
-		--~ minacc = {x = 0, y = -2, z = 0},
-		--~ maxacc = {x = 0, y = -4, z = 0},
-		--~ minexptime = 0.1,
-		--~ maxexptime = 1,
-		--~ minsize = 0.5,
-		--~ maxsize = 1.5,
-		--~ texture = "particle.png",
-		--~ glow = 15,
-	--~ })
---~ end
