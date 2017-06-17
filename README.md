@@ -5,16 +5,28 @@ Inspired from a Minecr**t Video on YT.
 
 This mod simplifies the extraction of ores by the fact that ores can be obtained simply by sieving gravel.
 
-This mod includes two new tools:
+This mod includes three new tools:
  - a hammer to produce gravel from Cobblestone
- - a gravel sieve to find ores
+ - two gravel sieves to find ores (a manual sieve and a automatic sieve)
 
-You can sieve the gravel several times but the ore output becomes less each time. The "useless" gravel can
-then be crafted to Compressed Gravel (inspired by Modern Hippie) and "cooked" in the furnace to get Cobblestone again.
+The sieved gravel can be crafted to Compressed Gravel (inspired by Modern Hippie) and "cooked" in the furnace to get Cobblestone again.
 
-Recipe for Compressed Gravel:  
-  "Gravel sifted *", "Gravel sifted *"  
-  "Gravel sifted *", "Gravel sifted *"  
+Recipe for the Gravel Sieve:
+
+    Wood,  -----------,  Wood
+    Wood,  Steel Ingot,  Wood
+    Wood,  -----------,  Wood
+
+
+Recipe for the Automatic Gravel Sieve:
+
+    Gravel Sieve,  Mese Crystal,  Mese Crystal
+
+
+Recipe for Compressed Gravel:
+
+    Sieved Gravel, Sieved Gravel,
+    Sieved Gravel, Sieved Gravel,
 
 
 Browse on: ![GitHub](https://github.com/joe7575/Minetest-Gravelsieve)
