@@ -40,7 +40,7 @@ gravelsieve.handler = function(itemstack, user, pointed_thing)
 			name="default_dig_crumbly"},{
 			gain=1,
 			pos=pos,
-			max_hear_distance=4,
+			max_hear_distance=6,
 			loop=false})
 	end
 
