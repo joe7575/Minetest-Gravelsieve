@@ -23,6 +23,7 @@
 	2017-06-17  v0.04  * Support for manual and automatic gravel sieve
 					   * Rarity now configurable
 					   * Output is 50% gravel and 50% sieved gravel
+	2017-06-20  v0.05  * Hammer sound bugfix
 
 ]]--
 

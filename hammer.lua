@@ -39,7 +39,8 @@ gravelsieve.handler = function(itemstack, user, pointed_thing)
 		minetest.sound_play({
 			name="default_dig_crumbly"},{
 			gain=1,
-			max_hear_distance=20,
+			pos=pos,
+			max_hear_distance=4,
 			loop=false})
 	end
 
