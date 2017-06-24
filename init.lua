@@ -3,7 +3,7 @@
 	Gravel Sieve Mod
 	================
 
-	v0.04 by JoSt
+	v1.00 by JoSt
 	Derived from the work of celeron55, Perttu Ahola  (furnace)
 
 	Copyright (C) 2017 Joachim Stolberg
@@ -24,7 +24,7 @@
 					   * Rarity now configurable
 					   * Output is 50% gravel and 50% sieved gravel
 	2017-06-20  v0.05  * Hammer sound bugfix
-
+	2017-06-24 	v1.00  * Released version w/o any changes
 ]]--
 
 gravelsieve = {
