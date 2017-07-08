@@ -25,6 +25,8 @@
 					   * Output is 50% gravel and 50% sieved gravel
 	2017-06-20  v0.05  * Hammer sound bugfix
 	2017-06-24 	v1.00  * Released version w/o any changes
+	2017-07-08  V1.01  * extended for moreores
+	
 ]]--
 
 gravelsieve = {
@@ -34,19 +36,25 @@ dofile(minetest.get_modpath("gravelsieve") .. "/hammer.lua")
 
 gravelsieve.ore_rarity = tonumber(minetest.setting_get("gravelsieve_ore_rarity")) or 1.0
 
+
 -- Ore probability table  (1/n)
 local ore_probability = {
-	iron_lump = 35,
-	copper_lump = 60,
-	tin_lump = 80,
-	gold_lump = 175,
-	mese_crystal = 275,
-	diamond = 340,
+	["default:iron_lump"] = 35,
+	["default:copper_lump"] = 60,
+	["default:tin_lump"] = 80,
+	["default:gold_lump"] = 175,
+	["default:mese_crystal"] = 275,
+	["default:diamond"] = 340,
 }
+
+if minetest.get_modpath("moreores") then
+	ore_probability["moreores:silver_lump"] = 100
+	ore_probability["moreores:mithril_lump"] = 250
+end
 
 -- check if tin is available
 if ItemStack("default:tin_lump") == nil then
-	ore_probability[tin_lump] = nil     -- not available
+	ore_probability["tin_lump"] = nil     -- not available
 end
 
 local sieve_formspec =
@@ -109,7 +117,7 @@ local function random_ore(inv, src)
 		probability = probability * gravelsieve.ore_rarity
 		if probability ~= nil then
 			if math.random(probability) == 1 then
-				local item = ItemStack("default:"..ore)
+				local item = ItemStack(ore)
 				if inv:room_for_item("dst", item) then
 					inv:add_item("dst", item)
 					return true     -- ore placed
