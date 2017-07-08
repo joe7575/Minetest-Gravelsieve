@@ -63,10 +63,10 @@ local sieve_formspec =
 	"image[3,1;1,1;gui_furnace_arrow_bg.png^[transformR270]"..
 	"list[context;dst;4,0;4,3;]"..
 	"list[current_player;main;0,4;8,4;]"..
-   "listring[context;dst]"..
-   "listring[current_player;main]"..
-   "listring[context;src]"..
-   "listring[current_player;main]"
+    "listring[context;dst]"..
+    "listring[current_player;main]"..
+    "listring[context;src]"..
+    "listring[current_player;main]"
 
 
 
@@ -235,7 +235,7 @@ for idx = 0,4 do
 		description = description,
 		tiles = tiles_data,
 		drawtype = "nodebox",
-      drop = node_name,
+        drop = node_name,
 		node_box = {
 			type = "fixed",
 			fixed = nodebox_data,
