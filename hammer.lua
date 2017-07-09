@@ -33,7 +33,8 @@ gravelsieve.handler = function(itemstack, user, pointed_thing)
 	end
 
 	local node = minetest.get_node(pos)
-	if node.name == "default:cobble" then
+	if node.name == "default:cobble" or node.name == "default:mossycobble" 
+			or node.name == "default:desert_cobble" then
 		node.name = "default:gravel"
 		minetest.swap_node(pos, node)
 		minetest.sound_play({
@@ -48,7 +49,7 @@ gravelsieve.handler = function(itemstack, user, pointed_thing)
 end
 
 minetest.register_tool("gravelsieve:hammer", {
-	description = "Hammer converts any kind of stone to gravel",
+	description = "Hammer converts Cobblestone into Gravel",
 	inventory_image = "gravelsieve_hammer.png",
 	on_use = function(itemstack, user, pointed_thing)
 		gravelsieve.handler(itemstack, user, pointed_thing)

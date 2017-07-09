@@ -3,7 +3,7 @@
 	Gravel Sieve Mod
 	================
 
-	v1.00 by JoSt
+	v1.02 by JoSt
 	Derived from the work of celeron55, Perttu Ahola  (furnace)
 
 	Copyright (C) 2017 Joachim Stolberg
@@ -26,7 +26,8 @@
 	2017-06-20  v0.05  * Hammer sound bugfix
 	2017-06-24 	v1.00  * Released version w/o any changes
 	2017-07-08  V1.01  * extended for moreores
-
+	2017-07-09  V1.02  * Cobblestone bugfix (NathanSalapat)
+	                   * ore_probability is now global accessable (bell07)
 ]]--
 
 gravelsieve = {
@@ -314,6 +315,7 @@ for idx = 0,4 do
 		sunlight_propagates = true,
 		is_ground_content = false,
 		groups = {choppy=2, cracky=1, not_in_creative_inventory=not_in_creative_inventory},
+		drop = node_name.."0",
 	})
 end
 end
