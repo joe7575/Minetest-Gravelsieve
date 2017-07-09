@@ -38,23 +38,22 @@ gravelsieve.ore_rarity = tonumber(minetest.setting_get("gravelsieve_ore_rarity")
 
 
 -- Ore probability table  (1/n)
-local ore_probability = {
+gravelsieve.ore_probability = {
 	["default:iron_lump"] = 35,
 	["default:copper_lump"] = 60,
 	["default:tin_lump"] = 80,
 	["default:gold_lump"] = 175,
 	["default:mese_crystal"] = 275,
 	["default:diamond"] = 340,
+	["moreores:silver_lump"] = 100,
+	["moreores:mithril_lump"] = 250,
 }
 
-if minetest.get_modpath("moreores") then
-	ore_probability["moreores:silver_lump"] = 100
-	ore_probability["moreores:mithril_lump"] = 250
-end
-
--- check if tin is available
-if ItemStack("default:tin_lump") == nil then
-	ore_probability["tin_lump"] = nil     -- not available
+-- remove not registered ores from list
+for ore, probability in pairs(gravelsieve.ore_probability) do
+	if not minetest.registered_items[ore] then
+		gravelsieve.ore_probability[ore] = nil
+	end
 end
 
 local sieve_formspec =
@@ -117,16 +116,14 @@ end
 -- place ores to dst according to the calculated probability
 local function random_ore(inv, src)
 	local num
-	for ore, probability in pairs(ore_probability) do
+	for ore, probability in pairs(gravelsieve.ore_probability) do
 		-- calculate the probability based on user configuration
 		probability = probability * gravelsieve.ore_rarity
-		if probability ~= nil then
-			if math.random(probability) == 1 then
-				local item = ItemStack(ore)
-				if inv:room_for_item("dst", item) then
-					inv:add_item("dst", item)
-					return true     -- ore placed
-				end
+		if math.random(probability) == 1 then
+			local item = ItemStack(ore)
+			if inv:room_for_item("dst", item) then
+				inv:add_item("dst", item)
+				return true     -- ore placed
 			end
 		end
 	end
