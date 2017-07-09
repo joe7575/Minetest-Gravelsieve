@@ -315,7 +315,7 @@ for idx = 0,4 do
 		sunlight_propagates = true,
 		is_ground_content = false,
 		groups = {choppy=2, cracky=1, not_in_creative_inventory=not_in_creative_inventory},
-		drop = node_name.."0",
+		drop = node_name.."3",
 	})
 end
 end
