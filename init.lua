@@ -26,7 +26,7 @@
 	2017-06-20  v0.05  * Hammer sound bugfix
 	2017-06-24 	v1.00  * Released version w/o any changes
 	2017-07-08  V1.01  * extended for moreores
-	
+
 ]]--
 
 gravelsieve = {
@@ -62,7 +62,12 @@ local sieve_formspec =
 	"list[context;src;1,1;1,1;]"..
 	"image[3,1;1,1;gui_furnace_arrow_bg.png^[transformR270]"..
 	"list[context;dst;4,0;4,3;]"..
-	"list[current_player;main;0,4;8,4;]"
+	"list[current_player;main;0,4;8,4;]"..
+    "listring[context;dst]"..
+    "listring[current_player;main]"..
+    "listring[context;src]"..
+    "listring[current_player;main]"
+
 
 
 local function allow_metadata_inventory_put(pos, listname, index, stack, player)
@@ -230,6 +235,7 @@ for idx = 0,4 do
 		description = description,
 		tiles = tiles_data,
 		drawtype = "nodebox",
+        drop = node_name,
 		node_box = {
 			type = "fixed",
 			fixed = nodebox_data,
@@ -362,4 +368,3 @@ minetest.register_craft({
 
 minetest.register_alias("gravelsieve:sieve", "gravelsieve:sieve3")
 minetest.register_alias("gravelsieve:auto_sieve", "gravelsieve:auto_sieve3")
-
