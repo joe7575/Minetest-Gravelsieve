@@ -28,6 +28,7 @@
 	2017-07-08  V1.01  * extended for moreores
 	2017-07-09  V1.02  * Cobblestone bugfix (NathanSalapat)
 	                   * ore_probability is now global accessable (bell07)
+	2017-08-29  V1.03  * Fix syntax listring (Jat15) 
 ]]--
 
 gravelsieve = {
@@ -63,10 +64,10 @@ local sieve_formspec =
 	"image[3,1;1,1;gui_furnace_arrow_bg.png^[transformR270]"..
 	"list[context;dst;4,0;4,3;]"..
 	"list[current_player;main;0,4;8,4;]"..
-    "listring[context;dst]"..
-    "listring[current_player;main]"..
-    "listring[context;src]"..
-    "listring[current_player;main]"
+	"listring[context;dst]"..
+	"listring[current_player;main]"..
+	"listring[context;src]"..
+	"listring[current_player;main]"
 
 
 
