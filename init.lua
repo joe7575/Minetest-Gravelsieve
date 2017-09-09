@@ -3,7 +3,7 @@
 	Gravel Sieve Mod
 	================
 
-	v1.02 by JoSt
+	v1.04 by JoSt
 	Derived from the work of celeron55, Perttu Ahola  (furnace)
 
 	Copyright (C) 2017 Joachim Stolberg
@@ -29,6 +29,7 @@
 	2017-07-09  V1.02  * Cobblestone bugfix (NathanSalapat)
 	                   * ore_probability is now global accessable (bell07)
 	2017-08-29  V1.03  * Fix syntax listring (Jat15) 
+	2017-09-08  V1.04  * Adaption to Tubelib
 ]]--
 
 gravelsieve = {
@@ -36,7 +37,7 @@ gravelsieve = {
 
 dofile(minetest.get_modpath("gravelsieve") .. "/hammer.lua")
 
-gravelsieve.ore_rarity = tonumber(minetest.setting_get("gravelsieve_ore_rarity")) or 1.0
+gravelsieve.ore_rarity = tonumber(minetest.setting_get("gravelsieve_ore_rarity")) or 0.5
 
 
 -- Ore probability table  (1/n)
@@ -60,6 +61,9 @@ end
 
 local sieve_formspec =
 	"size[8,8]"..
+	default.gui_bg..
+	default.gui_bg_img..
+	default.gui_slots..
 	"list[context;src;1,1;1,1;]"..
 	"image[3,1;1,1;gui_furnace_arrow_bg.png^[transformR270]"..
 	"list[context;dst;4,0;4,3;]"..
@@ -182,6 +186,7 @@ local function sieve_node_timer(pos, elapsed)
 	end
 end
 
+
 for automatic = 0,1 do
 for idx = 0,4 do
 	local nodebox_data = {
@@ -257,6 +262,11 @@ for idx = 0,4 do
 			inv:set_size('dst', 12)
 		end,
 
+		after_place_node = function(pos, placer)
+			local meta = minetest.get_meta(pos)
+			meta:set_string("infotext", "Gravel Sieve")
+		end,
+			
 		on_metadata_inventory_move = function(pos)
 			if automatic == 0 then
 				local meta = minetest.get_meta(pos)
@@ -319,6 +329,26 @@ for idx = 0,4 do
 		drop = node_name.."3",
 	})
 end
+end
+
+if tubelib then
+	local function get_items(pos)
+		local meta = minetest.get_meta(pos)
+		local inv = meta:get_inventory()
+		return tubelib.get_item(inv, "dst")
+	end
+
+	local function put_items(pos, items)
+		minetest.get_node_timer(pos):start(1.0)
+		local meta = minetest.get_meta(pos)
+		local inv = meta:get_inventory()
+		return tubelib.put_item(inv, "src", items)
+	end
+
+	tubelib.register_item_functions("gravelsieve:auto_sieve0", put_items, get_items)	
+	tubelib.register_item_functions("gravelsieve:auto_sieve1", put_items, get_items)	
+	tubelib.register_item_functions("gravelsieve:auto_sieve2", put_items, get_items)	
+	tubelib.register_item_functions("gravelsieve:auto_sieve3", put_items, get_items)	
 end
 
 minetest.register_node("gravelsieve:sieved_gravel", {
