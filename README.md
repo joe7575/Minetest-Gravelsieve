@@ -35,7 +35,7 @@ Download: ![GitHub](https://github.com/joe7575/Minetest-Gravelsieve/archive/mast
 
 
 ## Dependencies
-default  
+default, optional moreores and tubelib   
 
 # License
 Copyright (C) 2017 Joachim Stolberg  
