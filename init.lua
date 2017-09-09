@@ -331,24 +331,37 @@ for idx = 0,4 do
 end
 end
 
+
+------------------------------------------------------------------------
+-- Optional adaption to tubelib
+------------------------------------------------------------------------
 if tubelib then
-	local function get_items(pos)
-		local meta = minetest.get_meta(pos)
-		local inv = meta:get_inventory()
-		return tubelib.get_item(inv, "dst")
-	end
-
-	local function put_items(pos, items)
-		minetest.get_node_timer(pos):start(1.0)
-		local meta = minetest.get_meta(pos)
-		local inv = meta:get_inventory()
-		return tubelib.put_item(inv, "src", items)
-	end
-
-	tubelib.register_item_functions("gravelsieve:auto_sieve0", put_items, get_items)	
-	tubelib.register_item_functions("gravelsieve:auto_sieve1", put_items, get_items)	
-	tubelib.register_item_functions("gravelsieve:auto_sieve2", put_items, get_items)	
-	tubelib.register_item_functions("gravelsieve:auto_sieve3", put_items, get_items)	
+	tubelib.register_node("gravelsieve:auto_sieve3", 
+		{
+			"gravelsieve:auto_sieve0",
+			"gravelsieve:auto_sieve1",
+			"gravelsieve:auto_sieve2",
+		},
+		{
+		on_pull_item = function(pos)
+			local meta = minetest.get_meta(pos)
+			local inv = meta:get_inventory()
+			return tubelib.get_item(inv, "dst")
+		end,
+		on_push_item = function(pos, item)
+			minetest.get_node_timer(pos):start(1.0)
+			local meta = minetest.get_meta(pos)
+			local inv = meta:get_inventory()
+			return tubelib.put_item(inv, "src", item)
+		end,
+		on_recv_message = function(pos, topic, payload)
+			if topic == "start" then
+				start_the_machine(pos)
+			elseif topic == "stop" then
+				stop_the_machine(pos)
+			end
+		end,
+	})	
 end
 
 minetest.register_node("gravelsieve:sieved_gravel", {
