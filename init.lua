@@ -37,7 +37,7 @@ gravelsieve = {
 
 dofile(minetest.get_modpath("gravelsieve") .. "/hammer.lua")
 
-gravelsieve.ore_rarity = tonumber(minetest.setting_get("gravelsieve_ore_rarity")) or 0.5
+gravelsieve.ore_rarity = tonumber(minetest.setting_get("gravelsieve_ore_rarity")) or 1
 
 
 -- Ore probability table  (1/n)
