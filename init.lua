@@ -343,16 +343,18 @@ if tubelib then
 			"gravelsieve:auto_sieve2",
 		},
 		{
-		on_pull_item = function(pos)
+		on_pull_item = function(pos, side)
 			local meta = minetest.get_meta(pos)
-			local inv = meta:get_inventory()
-			return tubelib.get_item(inv, "dst")
+			return tubelib.get_item(meta, "dst")
 		end,
-		on_push_item = function(pos, item)
+		on_push_item = function(pos, side, item)
 			minetest.get_node_timer(pos):start(1.0)
 			local meta = minetest.get_meta(pos)
-			local inv = meta:get_inventory()
-			return tubelib.put_item(inv, "src", item)
+			return tubelib.put_item(meta, "src", item)
+		end,
+		on_unpull_item = function(pos, side, item)
+			local meta = minetest.get_meta(pos)
+			return tubelib.put_item(meta, "dst", item)
 		end,
 		on_recv_message = function(pos, topic, payload)
 			if topic == "start" then
