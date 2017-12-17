@@ -3,7 +3,7 @@
 	Gravel Sieve Mod
 	================
 
-	v1.04 by JoSt
+	v1.05 by JoSt
 	Derived from the work of celeron55, Perttu Ahola  (furnace)
 
 	Copyright (C) 2017 Joachim Stolberg
@@ -30,6 +30,7 @@
 	                   * ore_probability is now global accessable (bell07)
 	2017-08-29  V1.03  * Fix syntax listring (Jat15) 
 	2017-09-08  V1.04  * Adaption to Tubelib
+	2017-11-03  V1.05  * Adaption to Tubelib v0.06
 ]]--
 
 gravelsieve = {
@@ -322,6 +323,8 @@ for idx = 0,4 do
 		allow_metadata_inventory_move = allow_metadata_inventory_move,
 		allow_metadata_inventory_take = allow_metadata_inventory_take,
 
+		paramtype = "light",
+		sounds = default.node_sound_wood_defaults(),
 		paramtype2 = "facedir",
 		sunlight_propagates = true,
 		is_ground_content = false,
@@ -357,9 +360,9 @@ if tubelib then
 			return tubelib.put_item(meta, "dst", item)
 		end,
 		on_recv_message = function(pos, topic, payload)
-			if topic == "start" then
+			if topic == "on" then
 				start_the_machine(pos)
-			elseif topic == "stop" then
+			elseif topic == "off" then
 				stop_the_machine(pos)
 			end
 		end,
