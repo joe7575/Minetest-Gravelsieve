@@ -3,7 +3,7 @@
 	Gravel Sieve Mod
 	================
 
-	v1.05 by JoSt
+	v1.06 by JoSt
 	Derived from the work of celeron55, Perttu Ahola  (furnace)
 
 	Copyright (C) 2017 Joachim Stolberg
@@ -31,6 +31,7 @@
 	2017-08-29  V1.03  * Fix syntax listring (Jat15) 
 	2017-09-08  V1.04  * Adaption to Tubelib
 	2017-11-03  V1.05  * Adaption to Tubelib v0.06
+	2018-01-01  V1.06  * Hopper support added
 ]]--
 
 gravelsieve = {
@@ -416,3 +417,25 @@ minetest.register_craft({
 
 minetest.register_alias("gravelsieve:sieve", "gravelsieve:sieve3")
 minetest.register_alias("gravelsieve:auto_sieve", "gravelsieve:auto_sieve3")
+
+if minetest.get_modpath("hopper") and hopper ~= nil and hopper.add_container ~= nil then
+	hopper:add_container({
+		{"bottom", "gravelsieve:auto_sieve0", "src"}, 
+		{"top", "gravelsieve:auto_sieve0", "dst"},
+		{"side", "gravelsieve:auto_sieve0", "src"},
+		
+		{"bottom", "gravelsieve:auto_sieve1", "src"}, 
+		{"top", "gravelsieve:auto_sieve1", "dst"},
+		{"side", "gravelsieve:auto_sieve1", "src"},
+		
+		{"bottom", "gravelsieve:auto_sieve2", "src"}, 
+		{"top", "gravelsieve:auto_sieve2", "dst"},
+		{"side", "gravelsieve:auto_sieve2", "src"},
+		
+		{"bottom", "gravelsieve:auto_sieve3", "src"}, 
+		{"top", "gravelsieve:auto_sieve3", "dst"},
+		{"side", "gravelsieve:auto_sieve3", "src"},
+	})
+end
+
+
