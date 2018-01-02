@@ -3,7 +3,7 @@
 	Gravel Sieve Mod
 	================
 
-	v1.06 by JoSt
+	v1.07 by JoSt
 	Derived from the work of celeron55, Perttu Ahola  (furnace)
 
 	Copyright (C) 2017 Joachim Stolberg
@@ -32,6 +32,7 @@
 	2017-09-08  V1.04  * Adaption to Tubelib
 	2017-11-03  V1.05  * Adaption to Tubelib v0.06
 	2018-01-01  V1.06  * Hopper support added
+	2018-01-02  V1.07  * changed to registered ores
 ]]--
 
 gravelsieve = {
@@ -41,40 +42,64 @@ dofile(minetest.get_modpath("gravelsieve") .. "/hammer.lua")
 
 gravelsieve.ore_rarity = tonumber(minetest.setting_get("gravelsieve_ore_rarity")) or 1
 
+-- Increase the probability over the natural occurrence
+local PROBABILITY_FACTOR = 3
 
 -- Ore probability table  (1/n)
 gravelsieve.ore_probability = {
-	["default:iron_lump"] = 35,
-	["default:copper_lump"] = 60,
-	["default:tin_lump"] = 80,
-	["default:gold_lump"] = 175,
-	["default:mese_crystal"] = 275,
-	["default:diamond"] = 340,
-	["moreores:silver_lump"] = 100,
-	["moreores:mithril_lump"] = 250,
 }
 
--- remove not registered ores from list
-for ore, probability in pairs(gravelsieve.ore_probability) do
-	if not minetest.registered_items[ore] then
-		gravelsieve.ore_probability[ore] = nil
+local function in_list(list, value)
+	if type(list) == "table" then
+		for _,item in ipairs(list) do
+			if item == value then 
+				return true 
+			end
+		end
 	end
-end
+	return false
+end	
+
+-- collect all registered ores and calculate the probability
+local function add_ores()
+	for _,item in  pairs(minetest.registered_ores) do
+		if item.wherein == "default:stone" or in_list(item.wherein, "default:stone") then
+			if minetest.registered_nodes[item.ore] then
+				local drop = minetest.registered_nodes[item.ore].drop or item.ore
+				if type(drop) == "string" then
+					local probability = item.clust_scarcity / item.clust_size / 
+									PROBABILITY_FACTOR * gravelsieve.ore_rarity
+					probability = math.floor(probability)
+					if gravelsieve.ore_probability[drop] == nil then
+						gravelsieve.ore_probability[drop] = probability
+					else
+						gravelsieve.ore_probability[drop] = 
+										math.min(gravelsieve.ore_probability[drop], probability)
+					end
+				end
+			end
+		end
+	end
+	for drop,probability in pairs(gravelsieve.ore_probability) do
+		print(drop, probability)
+	end
+end	
+
+minetest.after(1, add_ores)
 
 local sieve_formspec =
 	"size[8,8]"..
 	default.gui_bg..
 	default.gui_bg_img..
 	default.gui_slots..
-	"list[context;src;1,1;1,1;]"..
-	"image[3,1;1,1;gui_furnace_arrow_bg.png^[transformR270]"..
-	"list[context;dst;4,0;4,3;]"..
-	"list[current_player;main;0,4;8,4;]"..
+	"list[context;src;1,1.5;1,1;]"..
+	"image[3,1.5;1,1;gui_furnace_arrow_bg.png^[transformR270]"..
+	"list[context;dst;4,0;4,4;]"..
+	"list[current_player;main;0,4.2;8,4;]"..
 	"listring[context;dst]"..
 	"listring[current_player;main]"..
 	"listring[context;src]"..
 	"listring[current_player;main]"
-
 
 
 local function allow_metadata_inventory_put(pos, listname, index, stack, player)
@@ -125,8 +150,6 @@ end
 local function random_ore(inv, src)
 	local num
 	for ore, probability in pairs(gravelsieve.ore_probability) do
-		-- calculate the probability based on user configuration
-		probability = probability * gravelsieve.ore_rarity
 		if math.random(probability) == 1 then
 			local item = ItemStack(ore)
 			if inv:room_for_item("dst", item) then
@@ -261,7 +284,7 @@ for idx = 0,4 do
 			meta:set_string("formspec", sieve_formspec)
 			local inv = meta:get_inventory()
 			inv:set_size('src', 1)
-			inv:set_size('dst', 12)
+			inv:set_size('dst', 16)
 		end,
 
 		after_place_node = function(pos, placer)
@@ -418,6 +441,7 @@ minetest.register_craft({
 minetest.register_alias("gravelsieve:sieve", "gravelsieve:sieve3")
 minetest.register_alias("gravelsieve:auto_sieve", "gravelsieve:auto_sieve3")
 
+-- adaption to hopper
 if minetest.get_modpath("hopper") and hopper ~= nil and hopper.add_container ~= nil then
 	hopper:add_container({
 		{"bottom", "gravelsieve:auto_sieve0", "src"}, 
@@ -437,5 +461,4 @@ if minetest.get_modpath("hopper") and hopper ~= nil and hopper.add_container ~= 
 		{"side", "gravelsieve:auto_sieve3", "src"},
 	})
 end
-
 
