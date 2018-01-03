@@ -49,40 +49,30 @@ local PROBABILITY_FACTOR = 3
 gravelsieve.ore_probability = {
 }
 
-local function in_list(list, value)
-	if type(list) == "table" then
-		for _,item in ipairs(list) do
-			if item == value then 
-				return true 
-			end
-		end
-	end
-	return false
-end	
-
 -- collect all registered ores and calculate the probability
 local function add_ores()
 	for _,item in  pairs(minetest.registered_ores) do
-		if item.wherein == "default:stone" or in_list(item.wherein, "default:stone") then
-			if minetest.registered_nodes[item.ore] then
-				local drop = minetest.registered_nodes[item.ore].drop or item.ore
-				if type(drop) == "string" then
-					local probability = item.clust_scarcity / item.clust_size / 
-									PROBABILITY_FACTOR * gravelsieve.ore_rarity
-					probability = math.floor(probability)
-					if gravelsieve.ore_probability[drop] == nil then
-						gravelsieve.ore_probability[drop] = probability
-					else
-						gravelsieve.ore_probability[drop] = 
-										math.min(gravelsieve.ore_probability[drop], probability)
-					end
+		if minetest.registered_nodes[item.ore] then
+			local drop = minetest.registered_nodes[item.ore].drop
+			if type(drop) == "string" and drop ~= item.ore then
+				local probability = item.clust_scarcity / item.clust_size / 
+								PROBABILITY_FACTOR * gravelsieve.ore_rarity
+				probability = math.floor(probability)
+				if gravelsieve.ore_probability[drop] == nil then
+					gravelsieve.ore_probability[drop] = probability
+				else
+					gravelsieve.ore_probability[drop] = 
+									math.min(gravelsieve.ore_probability[drop], probability)
 				end
 			end
 		end
 	end
-	for drop,probability in pairs(gravelsieve.ore_probability) do
-		print(drop, probability)
+	local overall_probability = 0.0
+	for name,probability in pairs(gravelsieve.ore_probability) do
+		print(string.format("[gravelsieve] %-32s %u", name, probability))
+		overall_probability = overall_probability + 1.0/probability
 	end
+	print(string.format("[gravelsieve] Overall probability %g", overall_probability))
 end	
 
 minetest.after(1, add_ores)
