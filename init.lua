@@ -54,7 +54,10 @@ local function add_ores()
 	for _,item in  pairs(minetest.registered_ores) do
 		if minetest.registered_nodes[item.ore] then
 			local drop = minetest.registered_nodes[item.ore].drop
-			if type(drop) == "string" and drop ~= item.ore then
+			if type(drop) == "string" 
+			and item.ore_type == "scatter"
+			and item.clust_scarcity ~= nil and item.clust_scarcity > 0 
+			and item.clust_size ~= nil and item.clust_size > 0 then
 				local probability = item.clust_scarcity / item.clust_size / 
 								PROBABILITY_FACTOR * gravelsieve.ore_rarity
 				probability = math.floor(probability)
