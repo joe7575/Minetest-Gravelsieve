@@ -356,7 +356,7 @@ end
 ------------------------------------------------------------------------
 -- Optional adaption to tubelib
 ------------------------------------------------------------------------
-if tubelib then
+if minetest.global_exists("tubelib") then
 	tubelib.register_node("gravelsieve:auto_sieve3", 
 		{
 			"gravelsieve:auto_sieve0",
