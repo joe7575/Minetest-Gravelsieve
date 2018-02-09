@@ -5,8 +5,9 @@
 
 	v1.07 by JoSt
 	Derived from the work of celeron55, Perttu Ahola  (furnace)
+	Pipeworks support added by FiftySix
 
-	Copyright (C) 2017 Joachim Stolberg
+	Copyright (C) 2017-2018 Joachim Stolberg
 	Copyright (C) 2011-2016 celeron55, Perttu Ahola <celeron55@gmail.com>
 	Copyright (C) 2011-2016 Various Minetest developers and contributors
 
@@ -33,6 +34,7 @@
 	2017-11-03  V1.05  * Adaption to Tubelib v0.06
 	2018-01-01  V1.06  * Hopper support added
 	2018-01-02  V1.07  * changed to registered ores
+	2018-02-09  V1.08  * Pipeworks support added, bugfix for issue #7
 ]]--
 
 gravelsieve = {
@@ -49,6 +51,16 @@ local PROBABILITY_FACTOR = 3
 gravelsieve.ore_probability = {
 }
 
+
+-- Pipeworks support
+local pipeworks_after_dig = nil
+local pipeworks_after_place = function(pos, placer) end
+
+if minetest.get_modpath("pipeworks") and pipeworks ~= nil then
+	pipeworks_after_dig = pipeworks.after_dig
+	pipeworks_after_place = pipeworks.after_place
+end
+
 -- collect all registered ores and calculate the probability
 local function add_ores()
 	for _,item in  pairs(minetest.registered_ores) do
@@ -56,17 +68,20 @@ local function add_ores()
 			local drop = minetest.registered_nodes[item.ore].drop
 			if type(drop) == "string"
 			and drop ~= item.ore
+			and drop ~= ""
 			and item.ore_type == "scatter"
 			and item.clust_scarcity ~= nil and item.clust_scarcity > 0 
 			and item.clust_size ~= nil and item.clust_size > 0 then
 				local probability = item.clust_scarcity / item.clust_size / 
 								PROBABILITY_FACTOR * gravelsieve.ore_rarity
 				probability = math.floor(probability)
-				if gravelsieve.ore_probability[drop] == nil then
-					gravelsieve.ore_probability[drop] = probability
-				else
-					gravelsieve.ore_probability[drop] = 
-									math.min(gravelsieve.ore_probability[drop], probability)
+				if probability > 20 then
+					if gravelsieve.ore_probability[drop] == nil then
+						gravelsieve.ore_probability[drop] = probability
+					else
+						gravelsieve.ore_probability[drop] = 
+										math.min(gravelsieve.ore_probability[drop], probability)
+					end
 				end
 			end
 		end
@@ -220,6 +235,7 @@ for idx = 0,4 do
 	local node_name
 	local description
 	local tiles_data
+	local tube_info
 	if automatic == 0 then
 		node_name = "gravelsieve:sieve"
 		description = "Gravel Sieve"
@@ -244,6 +260,28 @@ for idx = 0,4 do
 			"gravelsieve_auto_sieve.png",
 			"gravelsieve_auto_sieve.png",
 		}
+		
+		-- Pipeworks support
+		tube_info = {
+			insert_object = function(pos, node, stack, direction)
+				local meta = minetest.get_meta(pos)
+				local inv = meta:get_inventory()
+				if automatic == 0 then
+					local meta = minetest.get_meta(pos)
+					swap_node(pos, meta, true)
+				else
+					minetest.get_node_timer(pos):start(1.0)
+				end
+				return inv:add_item("src", stack)
+			end,
+			can_insert = function(pos, node, stack, direction)
+				local meta = minetest.get_meta(pos)
+				local inv = meta:get_inventory()
+				return inv:room_for_item("src", stack)
+			end,
+			input_inventory = "dst",
+			connect_sides = {left = 1, right = 1, front = 1, back = 1, bottom = 1, top = 1}
+		}
 	end
 
 	if idx == 3 then
@@ -259,6 +297,9 @@ for idx = 0,4 do
 		tiles = tiles_data,
 		drawtype = "nodebox",
         drop = node_name,
+		
+		tube = tube_info,     --  NEW
+		
 		node_box = {
 			type = "fixed",
 			fixed = nodebox_data,
@@ -280,10 +321,16 @@ for idx = 0,4 do
 			inv:set_size('src', 1)
 			inv:set_size('dst', 16)
 		end,
+		
+		-- Pipeworks support
+		after_dig_node = pipeworks_after_dig,
 
 		after_place_node = function(pos, placer)
 			local meta = minetest.get_meta(pos)
 			meta:set_string("infotext", "Gravel Sieve")
+			
+			-- Pipeworks support
+			pipeworks_after_place(pos, placer)
 		end,
 			
 		on_metadata_inventory_move = function(pos)
@@ -346,7 +393,7 @@ for idx = 0,4 do
 		paramtype2 = "facedir",
 		sunlight_propagates = true,
 		is_ground_content = false,
-		groups = {choppy=2, cracky=1, not_in_creative_inventory=not_in_creative_inventory},
+		groups = {choppy=2, cracky=1, not_in_creative_inventory=not_in_creative_inventory, tubedevice = 1, tubedevice_receiver = 1},
 		drop = node_name.."3",
 	})
 end

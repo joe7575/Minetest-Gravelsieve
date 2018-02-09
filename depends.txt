@@ -2,4 +2,5 @@ default
 moreblocks?
 tubelib?
 hopper?
+pipeworks?
 
